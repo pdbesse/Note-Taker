@@ -29,7 +29,13 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.get('/', (req, res) => {res.sendFile(path.join(__dirname, 'public/index.html'));
+    console.log('index.HTML request received');
+});
 
+app.get('/notes', (req, res) => {res.sendFile(path.join(__dirname, 'public/notes.html'));
+    console.log('notes.html request received');
+});
 
 app.listen(PORT, () => {
     console.log(`Listening on PORT: ${PORT}`)
