@@ -20,6 +20,10 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const notes = require('./db/db.json');
+const crypto = require('crypto');
+const randNoteID = crypto.randomUUID({disableEntropyCache: true});
+
+// console.log(randNoteID);
 
 // creates instance of express
 const app = express();
@@ -50,7 +54,7 @@ app.get('/notes', (req, res) => {res.sendFile(path.join(__dirname, 'public/notes
 
 // route to GET public/index.html
 app.get('*', (req, res) => {res.sendFile(path.join(__dirname, 'public/index.html'));
-    console.log('index.HTML request received');
+    // console.log('index.HTML request received');
 });
 
 // sets PORT listen
