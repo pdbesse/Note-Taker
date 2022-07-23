@@ -21,7 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const notes = require('./db/db.json');
 const crypto = require('crypto');
-const randNoteID = crypto.randomUUID({disableEntropyCache: true});
+const randNoteID = crypto.randomUUID({ disableEntropyCache: true });
 
 // console.log(randNoteID);
 
@@ -39,21 +39,38 @@ app.use(express.json());
 // route to GET api/notes
 app.get('/api/notes', (req, res) => {
     res.json(notes);
-    console.log(`${req.method} request received; returning saved notes`);
+    // console.log(`${req.method} request received; returning saved notes`);
 });
 
 // route to POST api/notes
 app.post('/api/notes', (req, res) => {
-    res.json(`${req.method} request received; posting your note`);
+    const { title, text } = req.body;
+    const newNote = {
+        title,
+        text,
+        note_id: randNoteID
+    }
+    notes.push(newNote);
+
+    fs.writeFile('./db/db.json', JSON.stringify(notes, null, 4), (err) => {
+        if (err) {
+            console.log(err)
+        } else {
+            res.json(newNote);
+            console.log('New note added');
+        };
+    });
 });
 
 // route to GET public/notes.html
-app.get('/notes', (req, res) => {res.sendFile(path.join(__dirname, 'public/notes.html'));
-    console.log('notes.html request received');
+app.get('/notes', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/notes.html'));
+    // console.log('notes.html request received');
 });
 
 // route to GET public/index.html
-app.get('*', (req, res) => {res.sendFile(path.join(__dirname, 'public/index.html'));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
     // console.log('index.HTML request received');
 });
 
