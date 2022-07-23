@@ -32,14 +32,24 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// route to public/index.html
-app.get('/', (req, res) => {res.sendFile(path.join(__dirname, 'public/index.html'));
+// route to GET public/notes.html
+app.get('/notes', (req, res) => {res.sendFile(path.join(__dirname, 'public/notes.html'));
+    console.log('notes.html request received');
+});
+
+// route to GET public/index.html
+app.get('*', (req, res) => {res.sendFile(path.join(__dirname, 'public/index.html'));
     console.log('index.HTML request received');
 });
 
-// route to public/notes.html
-app.get('/notes', (req, res) => {res.sendFile(path.join(__dirname, 'public/notes.html'));
-    console.log('notes.html request received');
+// route to GET api/notes
+app.get('/api/notes', (req, res) => {
+    res.json(`${req.method} request received; returning saved notes`);
+});
+
+// route to POST api/notes
+app.post('/api/notes', (req, res) => {
+    res.json(`${req.method} request received; posting your note`);
 });
 
 // sets PORT listen
