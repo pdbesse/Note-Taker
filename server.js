@@ -20,8 +20,10 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const notes = require('./db/db.json');
+// require node.js crypto module
 const crypto = require('crypto');
 const { allowedNodeEnvironmentFlags } = require('process');
+// run crypto.randomUUID to generate random id tags
 const randNoteID = crypto.randomUUID({ disableEntropyCache: true });
 
 // console.log(randNoteID);
@@ -34,6 +36,7 @@ const PORT = 3333;
 // allow access to /public
 app.use(express.static('public'));
 
+// middleware for parsing application/json and urlencoded data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -58,14 +61,17 @@ app.get('/api/notes', (req, res) => {
 // route to POST api/notes
 app.post('/api/notes', (req, res) => {
     const { title, text } = req.body;
+    // newNote structure; assigns random id
     const newNote = {
         title,
         text,
         id: randNoteID
     }
     // console.log(title, text);
+    // add newNote to notes database
     notes.push(newNote);
 
+    // write file db.json from notes database
     fs.writeFile('./db/db.json', JSON.stringify(notes, null, 4), (err) => {
         if (err) {
             console.log(err)
@@ -78,15 +84,22 @@ app.post('/api/notes', (req, res) => {
 
 // delete note
 app.delete('/api/notes/:id', (req, res) => {
+    // read notes database array
     fs.readFile(path.join(__dirname, '.db/db.json'), 'utf8', (err, data) => {
+        // assign request id parameter to variable
         const nixID = req.params.id;
 
+        // iterates through the notes database array
         for (let i = 0; i < notes.length; i++) {
+            // assign examined object in database to nixNote
             const nixNote = notes[i];
+            // if examined object's id key property == request id parameter
             if (nixNote.id == nixID) {
+                // splice the object from the notes database array
                 notes.splice([i], 1);
             };
         };
+        // write new file from notes database array after note has been deleted; overwrites old notes database array file
         fs.writeFile(path.join(__dirname, './db/db.json'), JSON.stringify(notes, null, 4), (err) => {
             if (err) {
                 console.log(err)
