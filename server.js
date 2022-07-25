@@ -21,6 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const notes = require('./db/db.json');
 const crypto = require('crypto');
+const { allowedNodeEnvironmentFlags } = require('process');
 const randNoteID = crypto.randomUUID({ disableEntropyCache: true });
 
 // console.log(randNoteID);
@@ -36,6 +37,18 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// route to GET public/index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
+    // console.log('index.HTML request received');
+});
+
+// route to GET public/notes.html
+app.get('/notes', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/notes.html'));
+    // console.log('notes.html request received');
+});
+
 // route to GET api/notes
 app.get('/api/notes', (req, res) => {
     res.json(notes);
@@ -48,8 +61,9 @@ app.post('/api/notes', (req, res) => {
     const newNote = {
         title,
         text,
-        note_id: randNoteID
+        id: randNoteID
     }
+    // console.log(title, text);
     notes.push(newNote);
 
     fs.writeFile('./db/db.json', JSON.stringify(notes, null, 4), (err) => {
@@ -62,13 +76,29 @@ app.post('/api/notes', (req, res) => {
     });
 });
 
-// route to GET public/notes.html
-app.get('/notes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/notes.html'));
-    // console.log('notes.html request received');
+// delete note
+app.delete('/api/notes/:id', (req, res) => {
+    fs.readFile(path.join(__dirname, '.db/db.json'), 'utf8', (err, data) => {
+        const nixID = req.params.id;
+
+        for (let i = 0; i < notes.length; i++) {
+            const nixNote = notes[i];
+            if (nixNote.id == nixID) {
+                notes.splice([i], 1);
+            };
+        };
+        fs.writeFile(path.join(__dirname, './db/db.json'), JSON.stringify(notes, null, 4), (err) => {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('Note deleted');
+            };
+        });
+        res.json(notes);
+    })
 });
 
-// route to GET public/index.html
+// route to GET public/index.html from *
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/index.html'));
     // console.log('index.HTML request received');
