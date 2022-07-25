@@ -6,8 +6,8 @@
   "scripts": {
     "start": "nodemon server"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Phillip Besse",
+  "license": "MIT",
   "dependencies": {
     "crypto": "^1.0.1",
     "express": "^4.16.4",
