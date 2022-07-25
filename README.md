@@ -4,6 +4,8 @@
 
 This app allows the user to record notes in a server-side database. It also allows the user to delete notes.
 
+The Note Taker app has been deployed on [Heroku](https://shrouded-tundra-00166.herokuapp.com/).
+
 ---
 
 ## Table of Contents
